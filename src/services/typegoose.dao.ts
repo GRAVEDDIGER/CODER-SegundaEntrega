@@ -4,12 +4,12 @@ import { Products } from "../products/products.schema";
 import mongoose, { Model, Schema } from "mongoose";
 import { AnyParamConstructor, ModelType } from "@typegoose/typegoose/lib/types";
 import { ResponseObject } from "../entities/classes";
+import { ChatMessage } from "../chat/chat.schema";
 const connectionString="mongodb+srv://dcsweb:adrian123@dcsweb.snm3hyr.mongodb.net/"
 
-export class TypegooseDAO<T extends Products| Cart> {
-    public static instance:any;
+export class TypegooseDAO<T extends Products| Cart|ChatMessage> {
+    static instance:any;
     public model!:ModelType<T>
-    protected connect:()=>any
     constructor(
 protected schema: AnyParamConstructor<T>,
 protected modelName:string,
@@ -22,13 +22,13 @@ public addProduct = async (product: Omit<T,"id">) => {
 },
 public getProducts=async()=>{
     try{
-        const data = await this.model.find({})
+        const data = await this.model.find({}).lean()
         return data
     }catch(e){console.log(e)}
 },
 public getProductById=async (id:string)=>{
     try {
-        const data = await this.model.findById(id)
+        const data = await this.model.findById(id).lean()
         return data
     }catch(e){console.log(e)}
 },
@@ -46,25 +46,14 @@ public deleteProduct=async(id:string)=>{
 }
 )        
     {   
-        this.connect=async ()=>{
-            try {
-                return await mongoose.connect(connectionString)
-            }catch(error)
-                {console.log(error)}
-            },
-            
-        this.connect().then(()=>{
-            this.model=getModelForClass(this.schema,{schemaOptions:{timestamps:true}})
+// Singleton Patern tha instanciates de COnnection to the Database..                 
             if (TypegooseDAO.instance !== undefined) return TypegooseDAO.instance;
             else {
-                TypegooseDAO.instance= this
-                return TypegooseDAO.instance
+                 mongoose.connect(connectionString).then(()=>{
+                    this.model=getModelForClass(this.schema,{schemaOptions:{timestamps:true}})
+                    TypegooseDAO.instance=this
+                    console.log("Connected to Mongoose")
+                }).catch(error=>{console.log(error)});
             }
-            
-        
-    
-    
-        }).catch((e:any)=>console.log(e))
-    
         }
 }

@@ -57,3 +57,44 @@ form {
   outline: 1px solid #333;
   box-shadow: 3px 3px 15px #666;
 }
+.chatInput {
+  padding: 1rem;
+  border-radius: 15%;
+  border: 2px solid #333;
+  min-width: 400px;
+}
+.chatButton {
+  padding: 1rem;
+  border-radius: 15%;
+  border: 2px solid #999;
+  background-color: blue;
+  color: #000;
+}
+
+.chatSection {
+  margin: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  border: 3px solid #333;
+  box-shadow: 3px 3px 15px #999;
+}
+.chatBox {
+  margin: 2rem;
+  min-height: 300px;
+  border: 2px solid #333;
+  box-shadow: 3px 3px 15px #999;
+}
+.chatSection > article {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
+}
+.userLogged {
+  text-align: end;
+}
+.brodcastedMessage {
+  text-align: left;
+}
