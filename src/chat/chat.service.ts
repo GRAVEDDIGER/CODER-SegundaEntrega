@@ -11,7 +11,6 @@ export class ChatService extends TypegooseDAO<ChatMessage>{
         },
         public getMessages=async()=>{
             const data= await this.getProducts()
-            
             return data
         }
     ){

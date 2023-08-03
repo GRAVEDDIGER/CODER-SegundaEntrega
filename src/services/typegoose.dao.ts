@@ -1,5 +1,5 @@
 import { getModelForClass } from "@typegoose/typegoose";
-import { Cart } from "../carts/cart.schema";
+import { Cart, CartSchema } from "../carts/cart.schema";
 import { Products } from "../products/products.schema";
 import mongoose, { Model, Schema } from "mongoose";
 import { AnyParamConstructor, ModelType } from "@typegoose/typegoose/lib/types";
@@ -7,7 +7,7 @@ import { ResponseObject } from "../entities/classes";
 import { ChatMessage } from "../chat/chat.schema";
 const connectionString="mongodb+srv://dcsweb:adrian123@dcsweb.snm3hyr.mongodb.net/"
 
-export class TypegooseDAO<T extends Products| Cart|ChatMessage> {
+export class TypegooseDAO<T extends Products| CartSchema|ChatMessage> {
     static instance:any;
     public model!:ModelType<T>
     constructor(

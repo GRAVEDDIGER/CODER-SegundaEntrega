@@ -1,18 +1,20 @@
-import { Cart, ResponseObject } from "../entities/classes";
+import { Cart, ResponseObject } from '../entities/classes';
 import { ICartService, IProductService, Product } from "../entities/products";
 import { ProductManager } from "../services/fs.dao";
 import { Response } from 'express';
+import { TypegooseDAO } from "../services/typegoose.dao";
+import { CartSchema } from './cart.schema';
 const productManager = new ProductManager<Cart>("./src/carts/carts.json")
-
+const pm  = new TypegooseDAO<CartSchema>(CartSchema,'carts')
 export class CartService<T extends { pid: string, quantity: number }> implements ICartService {
     constructor(
-        protected dao = productManager,
+        protected dao = pm ,//productManager,
         public createCart = async (products: { pid: string, quantity: number }[]) => {
             const cartObject = new Cart(products)
             try {
                 const response = await this.dao.addProduct(cartObject)
                 if (response !== undefined) {
-                    return new ResponseObject<Cart>(null, true, response)
+                    return new ResponseObject<T>(null, true, response as any)
                 } else return new ResponseObject("Crasheeed", false, null)
             } catch (error) {
                 console.log(error)
@@ -49,7 +51,7 @@ export class CartService<T extends { pid: string, quantity: number }> implements
         public addProductById = async (id: string, product: T) => {
             try {
                 const cartData = await this.dao.getProductById(id)
-                if (cartData !== undefined) {
+                if (cartData !== undefined && cartData!==null) {
                     const productData = cartData.products.findIndex(productField => product.pid === productField.pid)
                     if (productData !== -1) {
                         cartData.products[productData].quantity++
