@@ -19,6 +19,13 @@ The controller is responsable of handeling the user requests and provide the ade
 The routes layer singly links the routes to the controller 
 The products.json holds the data
 
+## Views
+The views are implemented in handdlebars. And some css was added to the public directory as well as the basic js for the client to work
+
+## Chat 
+This Feat adds chat functionality using socket io instanciation thought the route chat.
+the messages are stored on a mongo atlas persistence server, using a basic crud  DAO service that extends the product routes and chat routes services as well.
+
 ## API Routes
 * POST /api/carts/ Creates a new Cart body [{pid:string,quantity:number}]
 * POST /api/carts/:cid/product/:pid?quantity=number Adds a new product to the specified cart 
@@ -51,3 +58,7 @@ const productManager= new ProductManager<Product>("./path/")
 - 4 addProduct(product) You must provide a product type object, the id will be self instanciated by the class
 - 5 deleteProduct(id) You must provide a integer id matching the product to be erased
 
+## Pending Features.
+1) Ill tye to implement validation via ZOD.io.
+2) Ive some issues implementing the types for FS DAO and Mongoose DAO. 
+3) Something is wrong on my singleton schema and causes the database to instanciate multiple connections
