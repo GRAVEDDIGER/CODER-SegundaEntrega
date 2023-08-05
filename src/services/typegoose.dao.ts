@@ -18,11 +18,11 @@ protected modelName:string,
     {   
 // Singleton Patern tha instanciates de COnnection to the Database..                 
             if (TypegooseDAO.instance !== undefined &&  TypegooseDAO.instance !== null) {
-                console.log("Realoading Instance")
                 return TypegooseDAO.instance;}
  
             else {
                 console.log(TypegooseDAO.instance)
+                TypegooseDAO.instance=this
                  mongoose.connect(connectionString).then(()=>{
                     this.model=getModelForClass(this.schema,{schemaOptions:{timestamps:true}})
                     TypegooseDAO.instance=this

@@ -51,7 +51,7 @@ export class CartService<T extends { pid: string, quantity: number }> implements
         public addProductById = async (id: string, product: T) => {
             try {
                 const cartData = await this.dao.getProductById(id)
-                if (cartData !== undefined && cartData!==null) {
+                if (cartData !== undefined && cartData!==null && "products" in cartData && Array.isArray(cartData.products))  {
                     const productData = cartData.products.findIndex(productField => product.pid === productField.pid)
                     if (productData !== -1) {
                         cartData.products[productData].quantity++
