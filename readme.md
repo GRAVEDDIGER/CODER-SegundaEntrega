@@ -62,3 +62,4 @@ const productManager= new ProductManager<Product>("./path/")
 1) Ill tye to implement validation via ZOD.io.
 2) Ive some issues implementing the types for FS DAO and Mongoose DAO. 
 3) Something is wrong on my singleton schema and causes the database to instanciate multiple connections
+4) 

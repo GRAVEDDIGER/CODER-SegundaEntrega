@@ -1,7 +1,8 @@
 import { prop } from "@typegoose/typegoose"
 import { Products } from '../products/products.schema';
+type Product={pid:string,quantity:number}
 export class CartSchema {
-    @prop({required:true})
-    public products!:{pid:string,quantity:number}[]
+    @prop()
+    public products?:Product[]
 
 }
