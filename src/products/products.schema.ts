@@ -1,5 +1,5 @@
-import { prop } from "@typegoose/typegoose";
-
+import { Severity, modelOptions, prop } from "@typegoose/typegoose";
+@modelOptions({options: {allowMixed:0}})
 export class Products{
     @prop({required: true})
      public code!: string;
@@ -13,7 +13,6 @@ export class Products{
      public thumbnail!:string;
      @prop({required: true})
      public title!:string;
-     @prop({required: true})
-     public id!:string
+    
 
 }

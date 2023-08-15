@@ -1,7 +1,7 @@
-import { getModelForClass } from "@typegoose/typegoose";
+import { getModelForClass, modelOptions } from "@typegoose/typegoose";
 import { CartSchema } from "../carts/cart.schema";
 import { Products } from "../products/products.schema";
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, { FilterQuery, Model, MongooseQueryOptions, QueryOpThatReturnsDocument, QueryOptions, Schema } from "mongoose";
 import { AnyParamConstructor, ModelType } from "@typegoose/typegoose/lib/types";
 import { ResponseObject } from "../entities/classes";
 import { ChatMessage } from "../chat/chat.schema";
@@ -17,40 +17,55 @@ protected modelName:string,
 )        
     {   
 // Singleton Patern tha instanciates de COnnection to the Database..                 
-            if (TypegooseDAO.instance !== undefined &&  TypegooseDAO.instance !== null) {
-                return TypegooseDAO.instance;}
+            // if (TypegooseDAO.instance !== undefined &&  TypegooseDAO.instance !== null) {
+            //     return TypegooseDAO.instance;}
  
-            else {
-                console.log(TypegooseDAO.instance)
-                TypegooseDAO.instance=this
+            // else {
+            //     console.log(TypegooseDAO.instance)
+            //     TypegooseDAO.instance=this
                  mongoose.connect(connectionString).then(()=>{
                     this.model=getModelForClass(this.schema,{schemaOptions:{timestamps:true}})
                     TypegooseDAO.instance=this
                     console.log("Connected to Mongoose")
                 }).catch(error=>{console.log(error)});
-            }
+            // }
         }
-        async addProduct  (product: Omit<T,"id">) {
+        async addProduct  (product: Omit<T,"_id">) {
             try{
             const data=await this.model.create(product)
             return data
         }catch(e){console.log(e)}
         }
-        async getProducts(){
+        async getProducts(limit?: number,page?:number,sort?:{field:keyof T,descending:boolean},query?:FilterQuery<T>){
             try{
-                const data = await this.model.find({}).lean()
-                return data
+                const totalRecords = (await this.model.count())
+                console.log(totalRecords)
+                limit=limit || 10
+                page=page ||1
+                const totalPages=Math.ceil( totalRecords/limit)
+                const prevPage =page >1 ?page-1:null
+                const nextPage =page <totalPages ?page+1:null
+                const hasNextPage =page<totalPages
+                const hasPrevPage =page>1
+                let prevLink
+                if (hasPrevPage) 
+                    prevLink =`http://localhost:8080/api/products?page=${prevPage}`
+                let nextLink
+                if (hasNextPage) 
+                    nextLink =`http://localhost:8080/api/products?page=${nextPage}`
+                const data = await this.model.find(query||{}).skip((page-1)*limit).limit(limit).sort(sort !== undefined ? sort?.descending ? `-${sort.field as string}`: `${sort.field as string}`:null).lean()
+                return {payload:data,page,totalPages,prevPage,hasPrevPage,prevLink,nextPage,hasNextPage,nextLink}
             }catch(e){console.log(e)}
         }
         async getProductById (id:string){
             try {
-                const data = await this.model.findById(id).lean()
+                const data = await this.model.findById(id)
                 return data
             }catch(e){console.log(e)}
         }
         async updateProduct(id:string,product:Partial<T>){
         try{
-            const data =await this.model.updateOne({id},product)
+            const data =await this.model.updateOne({_id:id},product)
             return data
         }catch(e){console.log(e)}
         }

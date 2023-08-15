@@ -2,7 +2,6 @@ import { ProductManager } from "../services/fs.dao"
 import { ResponseObject } from "./classes"
 
 export interface Product {
-    id: string
     title: string
     description: string
     price: number

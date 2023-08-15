@@ -1,23 +1,19 @@
-import { Document } from "mongoose";
+import { Document, FilterQuery } from "mongoose";
 import { ResponseObject } from "../entities/classes";
 import { IProductService, Product } from "../entities/products";
 import { ProductManager } from "../services/fs.dao";
 import { TypegooseDAO } from "../services/typegoose.dao";
 import { Products } from "./products.schema";
-const productManager = new ProductManager<Product>("./src/products/products.json")
+//const productManager = new ProductManager<Product>("./src/products/products.json")
 const pm=new TypegooseDAO<Products>(Products,"products")
-export class ProductService implements IProductService {
+export class ProductService  {
     constructor(
         protected dao = pm,//productManager,
-        public getData = async (limit?: number) => {
+        public getData = async (limit?: number,page?:number,sort?:{field:keyof Product,descending:boolean},query?:FilterQuery<Product>) => {
             try {
-                const data = await this.dao.getProducts()
-                if (limit !== undefined && data !== undefined && Array.isArray(data)) {
-                    const processedData = data.slice(0, limit)
-                    return new ResponseObject<Products>(null, true, processedData )
-                } else if (data !== undefined) {
-                    return new ResponseObject<Products>(null, true, data)
-                } else return new ResponseObject<Products>("Data response is null", false, null)
+                
+                const data = await this.dao.getProducts(limit,page,sort,query)
+                return new ResponseObject<Products>(null, true, data as any||null)
             } catch (e) {
                 console.log(e)
                 return new ResponseObject<Products>(e, false, null)
@@ -34,7 +30,7 @@ export class ProductService implements IProductService {
                 return new ResponseObject<Products>(error, false, null)
             }
         },
-        public addProduct = async (product: Omit<Products, "id">) => {
+        public addProduct = async (product: Products|Omit<Products,"id">) => {
             try {
                 const response = await this.dao.addProduct(product)
                 return new ResponseObject<Products>(null, true, response as Products)
@@ -44,9 +40,9 @@ export class ProductService implements IProductService {
                 return new ResponseObject<Products>(error, false, null)
             }
         },
-        public updateProduct = async (product: Products) => {
+        public updateProduct = async (product: Products&{_id:any}) => {
             try {
-                const response = await this.dao.updateProduct(product.id, product)
+                const response = await this.dao.updateProduct(product._id, product)
                 return new ResponseObject<any>(null, true, response)
 
             } catch (error) {

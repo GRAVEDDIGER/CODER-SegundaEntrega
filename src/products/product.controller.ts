@@ -10,24 +10,21 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 export class ProductController {
     constructor(
         protected service = new ProductService(),
-        public getProducts = (req: Request, res: Response) => {
-            const { pid } = req.query
-            if (pid !== undefined && typeof pid === "string") {
-                this.service.getData(parseInt(pid)).then(response => {
+        public getProducts = (req: Request<any,any,any,{limit?:string,page?:string,query?:string,sort?:string}>, res: Response) => {
+            const { limit,page,query,sort } = req.query
+            
+               this.service.getData(parseInt(limit || "10"),parseInt(page || "1"),JSON.parse(sort||"{}"),JSON.parse(query||"{}")).then(response => {
                     if (response?.ok) res.status(200).send(response)
                     else res.status(404).send(response?.error)
-                }).catch(e => console.log(e))
-            } else {
-                this.service.getData().then(response => {
-                    if (response?.ok) {
-                        res.status(200).send(response)
-
-                    } else res.status(404).send(response?.error)
-                }).catch(e => console.log(e))
-            }
+                }).catch(e => {
+                    console.log(e)
+                    res.status(404).send(e)}
+                )
+                         
+            
         },
         public addProduct = async (req: Request, res: Response) => {
-            const { code, description, id, price, stock, thumbnail, title }: Product = req.body;
+            const { code, description, price, stock, thumbnail, title }: Product = req.body;
             const response = await this.service.addProduct({ code, description, price, stock, thumbnail, title });
             if (response !== undefined) {
                 console.log("emited", response, req.get("referer"));
@@ -47,8 +44,8 @@ export class ProductController {
         public updateById = async (req: Request, res: Response) => {
             const product: Partial<Product> & { id: string } = req.body
             try {
-                const data: ResponseObject<Product> = await this.service.getById(product.id)
-                let procesedData: Product
+                const data: ResponseObject<Product & {_id:any}> = await this.service.getById(product.id) as ResponseObject<Product & {_id:any}>
+                let procesedData: Product&{_id:any}
                 if (data?.ok) {
                     if (!Array.isArray(data?.data) && data?.data !== null) {
                         procesedData = { ...data.data, ...product };

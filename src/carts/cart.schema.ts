@@ -1,6 +1,17 @@
-import { prop } from "@typegoose/typegoose"
+import { Ref, modelOptions, prop } from "@typegoose/typegoose"
 import { Products } from '../products/products.schema';
-type Product={pid:string,quantity:number}
+import mongoose from 'mongoose';
+import Schema from 'mongoose';
+//import { Product } from '../entities/products';
+//type Product={pid:string,quantity:number}
+@modelOptions({options: {allowMixed:0}})
+export class Product{
+@prop({ref:Products})
+pid!:Ref<Products>
+@prop()
+quantity!:number
+}
+@modelOptions({options: {allowMixed:0}})
 export class CartSchema {
     @prop()
     public products?:Product[]

@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
 import { CartService } from "./cart.service";
+import { Products } from "../products/products.schema";
+import { Ref } from "@typegoose/typegoose";
+import { Product } from "./cart.schema";
 
 export class CartController {
     constructor(
         protected service = new CartService(),
         public createCart = async (req: Request, res: Response) => {
-            const products: { pid: string, quantity: number }[] = req.body
+            const products: Product[] = req.body
             console.log(products);
             try {
                 const response = await this.service.createCart(products)
@@ -47,5 +50,47 @@ export class CartController {
             } catch (error) { console.log(error) }
             console.log(pid, cid, quantity)
         }
-    ) { }
+        
+    ) {
+     }
+     async deleteCartProduct (req:Request<{cid?:string,pid?:string}>,res:Response){
+        const {cid,pid}=req.params
+        let data 
+        if (cid !== undefined && pid !== undefined)
+        data =await this.service.deleteCartProduct(cid,pid)
+        res.send(data)
+     }
+     async deleteCartProducts (req:Request<{cid?:string,pid?:string}>,res:Response){
+        const {cid,pid}=req.params
+        let data 
+        if (cid !== undefined && pid !== undefined)
+        data = this.service.deleteCartProducts(cid)
+        res.send(data)
+     }
+     async updateProducts (req:Request<{cid?:string}>,res:Response){
+        try{
+
+        }catch(e){console.log(e)
+        res.status(404).send(e)
+        }
+     }
+     async updateCartProductQuantity(req:Request<{cid:string,pid:string},any,{quantity:number}>,res:Response){
+        const {cid,pid}=req.params
+        const {quantity} =req.body
+        try{
+            const data= await this.service.updateCartProductQuantity(cid,pid,quantity)
+            res.status(200).send(data)
+        }catch(e){console.log(e)
+        res.status(404).send(e)
+        }
+     }
+     async getCartProducts(req:Request,res:Response){
+        const {cid}=req.params
+        try{
+            const data= await this.service.getCartProducts(cid)
+            res.status(200).send(data)
+        }catch(e){console.log(e)
+        res.status(404).send(e)
+        }
+     }
 }
