@@ -5,9 +5,10 @@ import mongoose, { FilterQuery, Model, MongooseQueryOptions, QueryOpThatReturnsD
 import { AnyParamConstructor, ModelType } from "@typegoose/typegoose/lib/types";
 import { ResponseObject } from "../entities/classes";
 import { ChatMessage } from "../chat/chat.schema";
+import { UserTS, zodCreateUserType } from "../auth/auth.schemas";
 const connectionString="mongodb+srv://dcsweb:adrian123@dcsweb.snm3hyr.mongodb.net/"
 
-export class TypegooseDAO<T extends Products| CartSchema|ChatMessage> {
+export class TypegooseDAO<T extends Products| CartSchema|ChatMessage|Omit<zodCreateUserType["body"],"password2">> {
     static instance:any
     public model!:ModelType<T>
     constructor(
@@ -16,19 +17,12 @@ protected modelName:string,
 
 )        
     {   
-// Singleton Patern tha instanciates de COnnection to the Database..                 
-            // if (TypegooseDAO.instance !== undefined &&  TypegooseDAO.instance !== null) {
-            //     return TypegooseDAO.instance;}
- 
-            // else {
-            //     console.log(TypegooseDAO.instance)
-            //     TypegooseDAO.instance=this
+
                  mongoose.connect(connectionString).then(()=>{
                     this.model=getModelForClass(this.schema,{schemaOptions:{timestamps:true}})
                     TypegooseDAO.instance=this
                     console.log("Connected to Mongoose")
                 }).catch(error=>{console.log(error)});
-            // }
         }
         async addProduct  (product: Omit<T,"_id">) {
             try{
