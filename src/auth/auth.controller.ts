@@ -1,22 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { zodCreateUserType, zodUserType } from './auth.schemas';
-
+const authService= new AuthService()
 export class AuthController{
-    constructor(public service=new AuthService()){}
+    constructor(public service=authService){}
     async login(req:Request<any,any,zodUserType["body"]>,res:Response){
         try{
-            const response = await this.service.loginUser(req.body)
+            const response = await authService.loginUser(req.body)
             if (response.ok){
                 const data=response.data
                 if (data !== null && "id" in data && data.id !== null && "role" in  data){
                         req.session.user=data.id as string
                         req.session.role=data.role as string
                         req.session.save()
-                        res.render("index")
+                        res.redirect("/")
                 }else {
                     req.session.destroy((err)=>{console.log("Error destroying session ",err)})
-                    res.render("login")
+                    res.redirect("/auth/login")
             }
             }
         }catch(error){console.log(error)
@@ -24,8 +24,10 @@ export class AuthController{
         }
     }
     async register (req:Request<any,any,zodCreateUserType["body"]>,res:Response){
+       console.log("register")
         try{
-            const data = await this.service.registerUser(req.body)
+            const data = await authService.registerUser(req.body)
+            console.log(data)
             if (data.ok)
             {
                 if (data.data !== undefined && data.data !== null)
@@ -35,12 +37,12 @@ export class AuthController{
                         req.session.user= response.id as string
                         req.session.role=response.role as string
                     }
-                    res.render("index")
-                }else res.render("login")
-            }else res.render("register")          
+                    res.redirect("/")
+                }else res.redirect("/auth/login")
+            }else res.redirect("/auth/register")          
         }catch(error){
             console.log(error)
-            res.render("register")
+            res.redirect("/auth/register")
         }
     }
     async getLogin (_req:Request,res:Response){

@@ -8,7 +8,7 @@ import { appRoutes } from "./app.routes";
 import http from "http";
 import { Server } from "socket.io";
 import Session from "express-session"
-import {MongoDBStore} from "connect-mongodb-session"
+import MongoDBStore from "connect-mongodb-session"
 import { authRouter } from "./auth/auth.routes";
 declare module 'express-session' {
     interface SessionData {   
@@ -17,8 +17,10 @@ declare module 'express-session' {
     }
   }
 const connectionString="mongodb+srv://dcsweb:adrian123@dcsweb.snm3hyr.mongodb.net/"
-const store = new MongoDBStore({uri:connectionString,collection:"My Sessions"})
-const session =Session({secret:"some pass",cookie:{maxAge:1000*60*60*24},store})
+const store =  MongoDBStore(Session)
+const session =Session({
+  resave:true,saveUninitialized:false,
+  secret:"some pass",cookie:{maxAge:1000*60*60*24},store: new store({uri:connectionString,collection:"My Sessions"})})
 
 
 const app = express();

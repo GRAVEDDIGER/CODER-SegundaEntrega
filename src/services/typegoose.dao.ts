@@ -11,7 +11,7 @@ const connectionString="mongodb+srv://dcsweb:adrian123@dcsweb.snm3hyr.mongodb.ne
 export class TypegooseDAO<T extends Products| CartSchema|ChatMessage|Omit<zodCreateUserType["body"],"password2">> {
     static instance:any
     public model!:ModelType<T>
-    constructor(
+     constructor(
 protected schema: AnyParamConstructor<T>,
 protected modelName:string,
 
