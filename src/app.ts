@@ -10,6 +10,8 @@ import { Server } from "socket.io";
 import Session from "express-session"
 import MongoDBStore from "connect-mongodb-session"
 import { authRouter } from "./auth/auth.routes";
+import "./auth/auth.passport.local"
+import "./auth/auth.passport.gh"
 declare module 'express-session' {
     interface SessionData {   
       user: string;

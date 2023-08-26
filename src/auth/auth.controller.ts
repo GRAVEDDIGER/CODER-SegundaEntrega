@@ -48,6 +48,9 @@ export class AuthController{
     async getLogin (_req:Request,res:Response){
         res.render("login")
             }
+    getGhLogin(_req:Request,res:Response){
+        res.render("login")
+    }        
     getRegister (_req:Request,res:Response){res.render("register")}
     getProfile (_req:Request,res:Response) {
         res.render("profile")
