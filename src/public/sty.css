@@ -98,3 +98,12 @@ form {
 .brodcastedMessage {
   text-align: left;
 }
+.menu {
+  font-size: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: row;
+}
+.menu > a {
+  padding: 12px;
+}

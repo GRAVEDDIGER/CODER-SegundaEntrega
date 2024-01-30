@@ -20,14 +20,14 @@ export class AppController {
                     content = response.data//.map((item:any)=> ({...item.doc,id:`${item.doc["_id" ] as string}`}) )// as Document<Products>[];
                     console.log(content)
                     res.render("index", { content})
-                }else res.render("index", { content:[{title:"empty array"}]})
+                }else res.render("index", { content:[{title:"empty array"}],user:req.user})
                 
 
             } catch (error) { console.log(error) }
 
         },
         public addProduct = async (req: Request, res: Response) => {
-            res.render("addProduct")
+            res.render("addProduct",{user:req.user})
         },
         public realTimeProducts = async (req: Request, res: Response) => {
 
@@ -36,7 +36,7 @@ export class AppController {
                 const response = await this.productsService.getData()
                 io.emit("data", response)
             })
-            res.render("realtime")
+            res.render("realtime",{user:req.user})
 
         },
         public chat = async (req: Request, res: Response) => {
@@ -63,7 +63,12 @@ export class AppController {
                 })
             })
 
-            res.render("chat")
+            res.render("chat",{user:req.user})
+        },
+        public loguedUser=(req:Request,res:Response)=>{
+            console.log("texto")
+            console.log(req.user,"ee")
+            res.render("index",{user: req.user && "username" in req.user ? req.user.username as any :null})
         }
 
     ) { }

@@ -6,6 +6,7 @@
 
 header {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   font-size: large;
   font-family: sans-serif;

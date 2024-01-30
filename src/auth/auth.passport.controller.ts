@@ -2,14 +2,15 @@ import { Request } from "express"
 import {PassportAuthService} from "./auth.pasport.service"
 import * as argon from "argon2"
 import { DoneCallback } from "passport"
-const passport= new PassportAuthService()
+import passport from 'passport';
+const passportAuthService= new PassportAuthService()
 export class PassportController {
     constructor (
-        private passportService= new PassportAuthService()
+        protected passportService= passportAuthService
     ){}
     async localLogin(req:Request,username:string,password:string,done:(error:any,data:any,...args:any)=>any){
 try{
-        const data = await passport.findByUserName(username)
+        const data = await passportAuthService.findByUserName(username)
         if (data.ok){
             const response = data.data
             if (response !== null&& typeof response ==="object" && "password" in response){
@@ -46,12 +47,15 @@ return done(e,null)
         }
     }
     async serialize(user:any,done:DoneCallback){
+        console.log("serialize", user)
         done(null,user._id)
     }
     async deSerialize(userId:string,done:DoneCallback){
-        const data= await this.passportService.findUserById(userId)
+        const data= await passportAuthService.findUserById(userId)
+        console.log(data,"serialize data")
         if (data.ok && data.data !== null){
-            done (null,data)
+            console.log("deserialize",data.data)
+            done (null,data.data)
         }else done(data.error,null)
     }
     async gitHubLogin(accesstoken:string,refreshtoken:string,profile:any,cb:DoneCallback){
@@ -59,7 +63,7 @@ return done(e,null)
  
             if (profile !== null &&typeof profile =="object" && "_json" in profile && "email" in profile._json) {
                 const username = profile["_json"].email as string
-                const data = await passport.findByUserName(username.toLowerCase())
+                const data = await passportAuthService.findByUserName(username.toLowerCase())
                 console.log(data,username)
                 if (data.ok){
                     const response = data.data
